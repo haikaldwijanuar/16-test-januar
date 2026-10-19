@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="id" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tes Psikologi 16PF (16 Personality Factor Questionnaire)</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chart.js for trait visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                            800: '#166534',
+                            900: '#14532d',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans h-full flex flex-col justify-between selection:bg-brand-500 selection:text-white">
+
+    <!-- Header Navigation -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
+        <div class="max-w-4xl mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="bg-brand-600 text-white p-2 rounded-xl shadow-md font-bold text-lg tracking-wider">16PF</div>
+                <div>
+                    <h1 class="font-bold text-slate-900 text-base md:text-lg">Kuesioner Faktor Kepribadian Cattell</h1>
+                    <p class="text-xs text-slate-500 hidden sm:block">Berdasarkan Teori Raymond Cattell (Sixteen Personality Factor)</p>
+                </div>
+            </div>
+            <div id="header-progress" class="text-xs font-semibold text-slate-600 bg-slate-100 px-3 py-1.5 rounded-full hidden">
+                Soal <span id="current-q-num">1</span> dari 20
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="flex-grow flex items-center justify-center p-4 sm:p-6 max-w-3xl w-full mx-auto">
+        
+        <!-- Welcome Screen -->
+        <section id="welcome-screen" class="bg-white rounded-2xl shadow-xl border border-slate-100 p-6 sm:p-10 w-full transition-all duration-300">
+            <div class="text-center max-w-lg mx-auto">
+                <span class="inline-block bg-emerald-100 text-emerald-800 text-xs font-semibold px-3 py-1 rounded-full mb-4">Tes Psikometri Resmi 16PF</span>
+                <h2 class="text-2xl sm:text-3xl font-bold text-slate-900 mb-3">Kenali Profil Kepribadian Anda Mendalam</h2>
+                <p class="text-slate-600 text-sm sm:text-base leading-relaxed mb-4">
+                    Teori <strong>16 Personality Factor (16PF)</strong> yang dikembangkan oleh Raymond Cattell mengukur 16 dimensi utama kepribadian manusia. Jawab 20 pertanyaan berikut secara jujur sesuai dengan kondisi diri Anda saat ini untuk mendapatkan diagnosis psikologis yang akurat.
+                </p>
+                
+                <!-- Disclaimer Box (Requirement 4) -->
+                <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6 text-left">
+                    <div class="flex items-start space-x-2">
+                        <span class="text-amber-600 text-lg">⚠️</span>
+                        <div>
+                            <h4 class="text-xs font-bold text-amber-800 uppercase tracking-wider mb-1">Disclaimer Penting:</h4>
+                            <p class="text-xs text-amber-700 leading-relaxed">
+                                Tes ini hanya untuk kesenangan dan eksplorasi mandiri. Ini bukan merupakan diagnosis klinis yang serius. Untuk diagnosis atau penanganan psikologis yang serius, dibutuhkan penanganan lebih lanjut oleh profesional (psikolog/psikiater).
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-slate-50 rounded-xl p-4 mb-6 text-left border border-slate-200/60">
+                    <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Panduan Pengisian:</h4>
+                    <ul class="text-xs sm:text-sm text-slate-600 space-y-1.5 list-disc list-inside">
+                        <li>Pilih skala dari <strong>1 (Sangat Tidak Setuju)</strong> hingga <strong>5 (Sangat Setuju)</strong>.</li>
+                        <li>Tidak ada jawaban benar atau salah; jawablah apa adanya.</li>
+                        <li>Waktu pengerjaan sekitar 3–5 menit.</li>
+                    </ul>
+                </div>
+                <button onclick="startQuiz()" class="w-full sm:w-auto px-8 py-3.5 bg-brand-600 hover:bg-brand-700 active:bg-brand-800 text-white font-semibold rounded-xl shadow-lg shadow-brand-600/30 transition-all transform hover:-translate-y-0.5">
+                    Mulai Tes Sekarang &rarr;
+                </button>
+            </div>
+        </section>
+
+        <!-- Quiz Screen -->
+        <section id="quiz-screen" class="bg-white rounded-2xl shadow-xl border border-slate-100 p-6 sm:p-10 w-full hidden transition-all duration-300">
+            <!-- Progress Bar -->
+            <div class="mb-6">
+                <div class="flex justify-between text-xs font-semibold text-slate-500 mb-2">
+                    <span id="progress-text">Pertanyaan 1 dari 20</span>
+                    <span id="progress-percentage">5%</span>
+                </div>
+                <div class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
+                    <div id="progress-bar-fill" class="bg-brand-600 h-2.5 rounded-full transition-all duration-300" style="width: 5%"></div>
+                </div>
+            </div>
+
+            <!-- Question Box (Factor label removed as requested) -->
+            <div class="mb-8">
+                <span class="inline-block bg-slate-100 text-slate-600 text-xs font-bold px-3 py-1 rounded-md mb-3">Pernyataan Penilaian Diri</span>
+                <h3 id="question-text" class="text-lg sm:text-xl font-semibold text-slate-900 leading-snug">
+                    Memuat pertanyaan...
+                </h3>
+            </div>
+
+            <!-- Likert Options -->
+            <div id="options-container" class="space-y-3 mb-8">
+                <!-- Dynamically populated options -->
+            </div>
+
+            <!-- Navigation Buttons -->
+            <div class="flex justify-between items-center pt-4 border-t border-slate-100">
+                <button id="prev-btn" onclick="prevQuestion()" class="px-5 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-medium text-sm hover:bg-slate-50 transition-all disabled:opacity-40 disabled:cursor-not-allowed">
+                    &larr; Sebelumnya
+                </button>
+                <button id="next-btn" onclick="nextQuestion()" class="px-6 py-2.5 bg-brand-600 hover:bg-brand-700 text-white font-medium text-sm rounded-xl shadow-md transition-all">
+                    Selanjutnya &rarr;
+                </button>
+            </div>
+        </section>
+
+        <!-- Result Screen -->
+        <section id="result-screen" class="bg-white rounded-2xl shadow-xl border border-slate-100 p-6 sm:p-10 w-full hidden transition-all duration-300">
+            <div class="text-center mb-8">
+                <div class="inline-flex items-center justify-center w-16 h-16 bg-emerald-100 text-brand-600 rounded-2xl mb-4 text-3xl font-bold shadow-inner">
+                    🎯
+                </div>
+                <h2 class="text-2xl sm:text-3xl font-bold text-slate-900 mb-2">Hasil Diagnosis Kepribadian 16PF</h2>
+                <p class="text-slate-600 text-sm">Berikut adalah profil analisis komprehensif berdasarkan faktor psikometri Raymond Cattell.</p>
+            </div>
+
+            <!-- Summary Card -->
+            <div class="bg-gradient-to-br from-brand-50 to-emerald-50 border border-brand-200 rounded-2xl p-6 mb-8">
+                <h3 class="font-bold text-brand-900 text-lg mb-2 flex items-center">
+                    <span class="mr-2">💡</span> Ringkasan Profil Utama Anda
+                </h3>
+                <p id="profile-summary-text" class="text-slate-700 text-sm sm:text-base leading-relaxed">
+                    Memuat ringkasan kepribadian...
+                </p>
+            </div>
+
+            <!-- Chart / Breakdown Container -->
+            <div class="mb-8">
+                <h3 class="font-bold text-slate-900 text-base mb-4">Grafik Dimensi Faktor Utama</h3>
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                    <canvas id="traitChart" width="400" height="250"></canvas>
+                </div>
+            </div>
+
+            <!-- Detailed Factors List -->
+            <div class="mb-8">
+                <h3 class="font-bold text-slate-900 text-base mb-4">Analisis Rinci 16 Faktor Cattell</h3>
+                <div id="detailed-factors-list" class="space-y-4">
+                    <!-- Populated via JS -->
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex flex-col sm:flex-row gap-3 pt-4 border-t border-slate-100">
+                <button onclick="restartQuiz()" class="flex-1 py-3 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-xl shadow-md transition-all text-center text-sm">
+                    Ulangi Tes
+                </button>
+                <button onclick="window.print()" class="flex-1 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl transition-all text-center text-sm">
+                    Cetak / Simpan PDF
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer with Developer Name -->
+    <footer class="text-center py-6 text-xs text-slate-500 border-t border-slate-200 mt-auto bg-white">
+        <p class="font-semibold text-slate-700 mb-1">Dikembangkan oleh: <span class="text-brand-700 font-bold">M. Haikal Dwi Januar</span></p>
+        <p>&copy; 2026 16PF Interactive Assessment Tool &bull; Berdasarkan Teori Raymond Cattell</p>
+    </footer>
+
+    <!-- Application Script -->
+    <script>
+        // Data Questions mapping to 16PF Factors (Factor names are hidden during the quiz as requested)
+        const questions = [
+            {
+                id: 1,
+                factor: "Warmth",
+                factorId: "A",
+                titleIndo: "Kehangatan & Keramahan",
+                question: "Saya merasa sangat mudah tersenyum, ramah, dan peduli terhadap perasaan orang lain di sekitar saya.",
+                options: [
+                    { text: "Sangat Tidak Setuju", score: 1 },
+                    { text: "Tidak Setuju", score: 2 },
+                    { text: "Netral", score: 3 },
+                    { text: "Setuju", score: 4 },
+                    { text: "Sangat Setuju", score: 5 }
+                ]
+            },
+            {
+                id: 2,
+                factor: "Reasoning",
+                factorId: "B",
+                titleIndo: "Kemampuan Penalaran & Logika",
+                question: "Saya lebih menyukai pemecahan masalah yang rumit menggunakan analisis logika dan pemikiran abstrak ketimbang intuisi.",
+                options: [
+                    { text: "Sangat Tidak Setuju", score: 1 },
+                    { text: "Tidak Setuju", score: 2 },
+                    { text: "Netral", score: 3 },
+                    { text: "Setuju", score: 4 },
+                    { text: "Sangat Setuju", score: 5 }
+                ]
+            },
+            {
+                id: 3,
+                factor: "Emotional Stability",
+                factorId: "C",
+                titleIndo: "Kestabilan Emosi",
+                question: "Saya tetap tenang, sabar, dan tidak mudah panik saat menghadapi situasi penuh tekanan atau krisis mendadak.",
+                options: [
+                    { text: "Sangat Tidak Setuju", score: 1 },
+                    { text: "Tidak Setuju", score: 2 },
+                    { text: "Netral", score: 3 },
+                    { text: "Setuju", score: 4 },
+                    { text: "Sangat Setuju", score: 5 }
+                ]
+            },
+            {
+                id: 4,
+                factor: "Dominance",
+                factorId: "E",
+                titleIndo: "Dominasi & Ketegasan",
+                question: "Saya cenderung suka memimpin kelompok, tegas mengambil keputusan, dan berani mengutarakan pendapat dengan kuat.",
+                options: [
+                    { text: "Sangat Tidak Setuju", score: 1 },
+                    { text: "Tidak Setuju", score: 2 },
+                    { text: "Netral", score: 3 },
+                    { text: "Setuju", score: 4 },
+                    { text: "Sangat Setuju", score: 5 }
+                ]
+            },
+            {
+                id: 5,
+                factor: "Liveliness",
+                factorId: "F",
+                titleIndo: "Semangat & Keceriaan",
+                question: "Saya adalah tipe orang yang bersemangat, ceria, antusias, dan senang menghidupkan suasana di tengah keramaian.",
+                options: [
+                    { text: "Sangat Tidak Setuju", score: 1 },
+                    { text: "Tidak Setuju", score: 2 },
+                    { text: "Netral", score: 3 },
+                    { text: "Setuju", score: 4 },
+                    { text: "Sangat Setuju", score: 5 }
+                ]
+            },
+            {
+                id: 6,
+                factor: "Rule-Consciousness",
+                factorId: "G",
+                titleIndo: "Kesadaran Terhadap Aturan",
+                question: "Saya sangat menjunjung tinggi aturan, tata tertib, integritas moral, dan disiplin dalam kehidupan sehari-hari.",
+                options: [
+                    { text: "Sangat Tidak Setuju", score: 1 },
+                    { text: "Tidak Setuju", score: 2 },
+                    { text: "Netral", score: 3 },
+                    { text: "Setuju", score: 4 },
+                    { text: "Sangat Setuju", score: 5 }
+                ]
+            },
+            {
+                id: 7,
+                factor: "Social Boldness",
+                factorId: "H",
+                titleIndo: "Keberanian Sosial",
+                question: "Saya merasa percaya diri, tidak canggung, dan berani berkenalan atau tampil di hadapan orang yang baru dikenal.",
+                options: [
+                    { text: "Sangat Tidak Setuju", score: 1 },
+                    { text: "Tidak Setuju", score: 2 },
+                    { text: "Netral", score: 3 },
+                    { text: "Setuju", score: 4 },
+                    { text: "Sangat Setuju", score: 5 }
+                ]
+            },
+            {
+                id: 8,
+                factor: "Sensitivity",
+                factorId: "I",
+                titleIndo: "Kepekaan Emosional & Estetika",
+                question: "Saya memiliki perasaan yang peka, menghargai seni, empati mendalam, dan mudah terharu oleh keindahan atau penderitaan.",
+                options: [
+                    { text: "Sangat Tidak Setuju", score: 1 },
+                    { text: "Tidak Setuju", score: 2 },
+                    { text: "Netral", score: 3 },
+                    { text: "Setuju", score: 4 },
+                    { text: "Sangat Setuju", score: 5 }
+                ]
+            },
+            {
+                id: 9,
+                factor: "Vigilance",
+                factorId: "L",
+                titleIndo: "Kewaspadaan & Skeptisisme",
+                question: "Saya cenderung berhati-hati, waspada, dan tidak langsung percaya begitu saja pada niat orang lain sebelum terbukti.",
+                options: [
+                    { text: "Sangat Tidak Setuju", score: 1 },
+                    { text: "Tidak Setuju", score: 2 },
+                    { text: "Netral", score: 3 },
+                    { text: "Setuju", score: 4 },
+                    { text: "Sangat Setuju", score: 5 }
+                ]
+            },
+            {
+                id: 10,
+                factor: "Abstractedness",
+                factorId: "M",
+                titleIndo: "Orientasi Pada Ide & Imajinasi",
+                question: "Saya sering melamun, imajinatif, menyukai teori abstrak, dan kerap memikirkan ide-ide kreatif di luar kebiasaan.",
+                options: [
+                    { text: "Sangat Tidak Setuju", score: 1 },
+                    { text: "Tidak Setuju", score: 2 },
+                    { text: "Netral", score: 3 },
+                    { text: "Setuju", score: 4 },
+                    { text: "Sangat Setuju", score: 5 }
+                ]
+            },
+            {
+                id: 11,
+                factor: "Privateness",
+                factorId: "N",
+                titleIndo: "Kecenderungan Menjaga Privasi",
+                question: "Saya lebih suka menyimpan masalah pribadi untuk diri sendiri dan berhati-hati dalam membagikan urusan privat.",
+                options: [
+                    { text: "Sangat Tidak Setuju", score: 1 },
+                    { text: "Tidak Setuju", score: 2 },
+                    { text: "Netral", score: 3 },
+                    { text: "Setuju", score: 4 },
+                    { text: "Sangat Setuju", score: 5 }
+                ]
+            },
+            {
+                id: 12,
+                factor: "Apprehension",
+                factorId: "O",
+                titleIndo: "Kekhawatiran & Keraguan Diri",
+                question: "Saya terkadang merasa cemas berlebihan, sering meragukan kemampuan diri sendiri, dan takut membuat kesalahan.",
+                options: [
+                    { text: "Sangat Tidak Setuju", score: 1 },
+                    { text: "Tidak Setuju", score: 2 },
+                    { text: "Netral", score: 3 },
+                    { text: "Setuju", score: 4 },
+                    { text: "Sangat Setuju", score: 5 }
+                ]
+            },
+            {
+                id: 13,
+                factor: "Openness to Change",
+                factorId: "Q1",
+                titleIndo: "Keterbukaan Terhadap Perubahan",
+                question: "Saya sangat menyukai eksperimen, pembaharuan, tantangan baru, serta terbuka mendengarkan sudut pandang radikal.",
+                options: [
+                    { text: "Sangat Tidak Setuju", score: 1 },
+                    { text: "Tidak Setuju", score: 2 },
+                    { text: "Netral", score: 3 },
+                    { text: "Setuju", score: 4 },
+                    { text: "Sangat Setuju", score: 5 }
+                ]
+            },
+            {
+                id: 14,
+                factor: "Self-Reliance",
+                factorId: "Q2",
+                titleIndo: "Kemandirian & Keandalan Diri",
+                question: "Saya lebih suka bekerja secara mandiri, mengambil keputusan sendiri, dan tidak bergantung pada validasi orang lain.",
+                options: [
+                    { text: "Sangat Tidak Setuju", score: 1 },
+                    { text: "Tidak Setuju", score: 2 },
+                    { text: "Netral", score: 3 },
+                    { text: "Setuju", score: 4 },
+                    { text: "Sangat Setuju", score: 5 }
+                ]
+            },
+            {
+                id: 15,
+                factor: "Perfectionism",
+                factorId: "Q3",
+                titleIndo: "Keteraturan & Ketelitian Tinggi",
+                question: "Saya orang yang sangat terencana, perfeksionis, menyukai kerapian, dan selalu mengontrol detail pekerjaan.",
+                options: [
+                    { text: "Sangat Tidak Setuju", score: 1 },
+                    { text: "Tidak Setuju", score: 2 },
+                    { text: "Netral", score: 3 },
+                    { text: "Setuju", score: 4 },
+                    { text: "Sangat Setuju", score: 5 }
+                ]
+            },
+            {
+                id: 16,
+                factor: "Tension",
+                factorId: "Q4",
+                titleIndo: "Ketegangan & Dorongan Internal",
+                question: "Saya sering merasakan energi dorongan yang tinggi namun kadang disertai ketegangan saraf atau sulit bersantai.",
+                options: [
+                    { text: "Sangat Tidak Setuju", score: 1 },
+                    { text: "Tidak Setuju", score: 2 },
+                    { text: "Netral", score: 3 },
+                    { text: "Setuju", score: 4 },
+                    { text: "Sangat Setuju", score: 5 }
+                ]
+            },
+            {
+                id: 17,
+                factor: "Warmth & Sociability",
+                factorId: "A2",
+                titleIndo: "Kehangatan Sosial Tambahan",
+                question: "Bagi saya, membantu orang lain dan menjalin kedekatan emosional adalah prioritas utama dalam hidup.",
+                options: [
+                    { text: "Sangat Tidak Setuju", score: 1 },
+                    { text: "Tidak Setuju", score: 2 },
+                    { text: "Netral", score: 3 },
+                    { text: "Setuju", score: 4 },
+                    { text: "Sangat Setuju", score: 5 }
+                ]
+            },
+            {
+                id: 18,
+                factor: "Emotional Stability & Resilience",
+                factorId: "C2",
+                titleIndo: "Ketahanan Mental",
+                question: "Kegagalan atau kritikan tajam tidak mudah mematahkan semangat saya untuk bangkit kembali.",
+                options: [
+                    { text: "Sangat Tidak Setuju", score: 1 },
+                    { text: "Tidak Setuju", score: 2 },
+                    { text: "Netral", score: 3 },
+                    { text: "Setuju", score: 4 },
+                    { text: "Sangat Setuju", score: 5 }
+                ]
+            },
+            {
+                id: 19,
+                factor: "Dominance & Leadership",
+                factorId: "E2",
+                titleIndo: "Kepemimpinan Efektif",
+                question: "Dalam diskusi kelompok, saya sering diandalkan untuk merumuskan arah tujuan dan mengambil alih komando.",
+                options: [
+                    { text: "Sangat Tidak Setuju", score: 1 },
+                    { text: "Tidak Setuju", score: 2 },
+                    { text: "Netral", score: 3 },
+                    { text: "Setuju", score: 4 },
+                    { text: "Sangat Setuju", score: 5 }
+                ]
+            },
+            {
+                id: 20,
+                factor: "Openness & Innovation",
+                factorId: "Q1_2",
+                titleIndo: "Inovasi & Fleksibilitas",
+                question: "Saya cepat beradaptasi terhadap perubahan teknologi, metode baru, atau lingkungan kerja yang dinamis.",
+                options: [
+                    { text: "Sangat Tidak Setuju", score: 1 },
+                    { text: "Tidak Setuju", score: 2 },
+                    { text: "Netral", score: 3 },
+                    { text: "Setuju", score: 4 },
+                    { text: "Sangat Setuju", score: 5 }
+                ]
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let userAnswers = {}; // stores question index -> selected score
+
+        const welcomeScreen = document.getElementById('welcome-screen');
+        const quizScreen = document.getElementById('quiz-screen');
+        const resultScreen = document.getElementById('result-screen');
+        const headerProgress = document.getElementById('header-progress');
+        const currentQNum = document.getElementById('current-q-num');
+        const progressText = document.getElementById('progress-text');
+        const progressPercentage = document.getElementById('progress-percentage');
+        const progressBarFill = document.getElementById('progress-bar-fill');
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+
+        function startQuiz() {
+            welcomeScreen.classList.add('hidden');
+            quizScreen.classList.remove('hidden');
+            headerProgress.classList.remove('hidden');
+            currentQuestionIndex = 0;
+            userAnswers = {};
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            const q = questions[currentQuestionIndex];
+            currentQNum.innerText = currentQuestionIndex + 1;
+            progressText.innerText = `Pertanyaan ${currentQuestionIndex + 1} dari ${questions.length}`;
+            const pct = Math.round(((currentQuestionIndex + 1) / questions.length) * 100);
+            progressPercentage.innerText = pct + '%';
+            progressBarFill.style.width = pct + '%';
+
+            questionText.innerText = q.question;
+
+            // Render options
+            optionsContainer.innerHTML = '';
+            q.options.forEach((opt, idx) => {
+                const isSelected = userAnswers[currentQuestionIndex] === opt.score;
+                const btn = document.createElement('button');
+                btn.className = `w-full text-left p-4 rounded-xl border transition-all flex items-center justify-between ${
+                    isSelected 
+                        ? 'border-brand-600 bg-brand-50 text-brand-900 font-semibold shadow-sm' 
+                        : 'border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-700 font-medium'
+                }`;
+                btn.innerHTML = `
+                    <span class="text-sm sm:text-base">${opt.text}</span>
+                    <span class="w-6 h-6 rounded-full border flex items-center justify-center text-xs ${
+                        isSelected ? 'border-brand-600 bg-brand-600 text-white' : 'border-slate-300 text-slate-400'
+                    }">${opt.score}</span>
+                `;
+                btn.onclick = () => selectOption(opt.score);
+                optionsContainer.appendChild(btn);
+            });
+
+            prevBtn.disabled = currentQuestionIndex === 0;
+            nextBtn.innerText = currentQuestionIndex === questions.length - 1 ? 'Selesai & Lihat Hasil' : 'Selanjutnya →';
+        }
+
+        function selectOption(score) {
+            userAnswers[currentQuestionIndex] = score;
+            loadQuestion(); // reload to highlight selection
+        }
+
+        function nextQuestion() {
+            if (userAnswers[currentQuestionIndex] === undefined) {
+                alert('Silakan pilih salah satu jawaban terlebih dahulu.');
+                return;
+            }
+
+            if (currentQuestionIndex < questions.length - 1) {
+                currentQuestionIndex++;
+                loadQuestion();
+            } else {
+                calculateResults();
+            }
+        }
+
+        function prevQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                loadQuestion();
+            }
+        }
+
+        let myChart = null;
+
+        function calculateResults() {
+            quizScreen.classList.add('hidden');
+            headerProgress.classList.add('hidden');
+            resultScreen.classList.remove('hidden');
+
+            const factorMap = {};
+            questions.forEach((q, idx) => {
+                const score = userAnswers[idx] || 3;
+                if (!factorMap[q.factor]) {
+                    factorMap[q.factor] = { name: q.titleIndo, code: q.factorId, total: 0, count: 0 };
+                }
+                factorMap[q.factor].total += score;
+                factorMap[q.factor].count += 1;
+            });
+
+            const processedFactors = Object.keys(factorMap).map(key => {
+                const avg = factorMap[key].total / factorMap[key].count;
+                const percentage = Math.round((avg / 5) * 100);
+                return {
+                    factorName: key,
+                    code: factorMap[key].code,
+                    titleIndo: factorMap[key].name,
+                    score: avg.toFixed(1),
+                    percentage: percentage
+                };
+            });
+
+            let totalSum = 0;
+            let countTotal = 0;
+            Object.values(userAnswers).forEach(val => {
+                totalSum += val;
+                countTotal++;
+            });
+            const overallAvg = countTotal > 0 ? (totalSum / countTotal).toFixed(1) : 3;
+
+            let summaryText = "";
+            if (overallAvg >= 3.8) {
+                summaryText = `Berdasarkan skor rata-rata keseluruhan (${overallAvg}/5.0), Anda memiliki profil kepribadian yang <strong>sangat dinamis, proaktif, dan ekspresif</strong>. Anda menunjukkan tingkat ketegasan, kehangatan sosial, serta keterbukaan terhadap perubahan yang tinggi. Anda cenderung nyaman mengambil peran kepemimpinan dan menghadapi tantangan baru dengan penuh percaya diri.`;
+            } else if (overallAvg >= 3.0) {
+                summaryText = `Berdasarkan skor rata-rata keseluruhan (${overallAvg}/5.0), profil kepribadian Anda berada pada titik <strong>seimbang (adaptif)</strong>. Anda memiliki fleksibilitas tinggi dalam merespons situasi—mampu bersikap hangat namun tetap profesional, serta dapat bekerja secara mandiri maupun kolaboratif dengan baik sesuai kebutuhan lingkungan.`;
+            } else {
+                summaryText = `Berdasarkan skor rata-rata keseluruhan (${overallAvg}/5.0), Anda menunjukkan profil kepribadian yang <strong>reflektif, tenang, dan mawas diri</strong>. Anda cenderung menyukai ketenangan, menjaga privasi, berhati-hati dalam bertindak, serta sangat teliti dalam merencanakan setiap langkah hidup Anda.`;
+            }
+
+            document.getElementById('profile-summary-text').innerHTML = summaryText;
+
+            // Render Detailed Breakdown
+            const detailedContainer = document.getElementById('detailed-factors-list');
+            detailedContainer.innerHTML = '';
+            processedFactors.forEach(f => {
+                const item = document.createElement('div');
+                item.className = 'bg-slate-50 p-4 rounded-xl border border-slate-200';
+                item.innerHTML = `
+                    <div class="flex justify-between items-center mb-1.5">
+                        <span class="font-semibold text-slate-800 text-sm">Faktor ${f.code}: ${f.titleIndo}</span>
+                        <span class="text-xs font-bold text-brand-700 bg-brand-100 px-2.5 py-1 rounded-md">Skor: ${f.score} / 5.0 (${f.percentage}%)</span>
+                    </div>
+                    <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+                        <div class="bg-brand-600 h-2 rounded-full transition-all duration-500" style="width: ${f.percentage}%"></div>
+                    </div>
+                `;
+                detailedContainer.appendChild(item);
+            });
+
+            // Render Chart.js
+            const ctx = document.getElementById('traitChart').getContext('2d');
+            if (myChart) {
+                myChart.destroy();
+            }
+            myChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: processedFactors.map(f => `Faktor ${f.code}`),
+                    datasets: [{
+                        label: 'Skor Dimensi (Skala 1 - 5)',
+                        data: processedFactors.map(f => f.score),
+                        backgroundColor: '#22c55e88',
+                        borderColor: '#16a34a',
+                        borderWidth: 1,
+                        borderRadius: 6,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 5,
+                            ticks: { stepSize: 1 }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false }
+                    }
+                }
+            });
+        }
+
+        function restartQuiz() {
+            resultScreen.classList.add('hidden');
+            welcomeScreen.classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
